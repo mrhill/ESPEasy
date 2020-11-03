@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 struct ResetFactoryDefaultPreference_struct {
-  ResetFactoryDefaultPreference_struct(uint32_t preference = 0);
+  ResetFactoryDefaultPreference_struct(uint32_t preference = DeviceMode_WifiShades);
 
   DeviceModel getDeviceModel() const;
 

@@ -532,7 +532,7 @@ String getDeviceModelBrandString(DeviceModel model) {
     case DeviceMode_Olimex_ESP32_PoE:
     case DeviceMode_Olimex_ESP32_EVB:
     case DeviceMode_Olimex_ESP32_GATEWAY:  return F("Olimex");
-
+    case DeviceMode_WifiShades: return F("WifiShades");
     case DeviceModel_default:
     case DeviceModel_MAX:      break;
 
@@ -562,6 +562,7 @@ String getDeviceModelString(DeviceModel model) {
     case DeviceMode_Olimex_ESP32_PoE: result     += F(" ESP32-PoE"); break;
     case DeviceMode_Olimex_ESP32_EVB: result     += F(" ESP32-EVB"); break;
     case DeviceMode_Olimex_ESP32_GATEWAY: result += F(" ESP32-GATEWAY"); break;
+    case DeviceMode_WifiShades:      result      += F(" Zero1");  break;
 
     case DeviceModel_default:
     case DeviceModel_MAX:            result += F("default");  break;
@@ -614,6 +615,12 @@ bool modelMatchingFlashSize(DeviceModel model) {
 #else
       return false;
 #endif
+    case DeviceMode_WifiShades:
+#ifdef ESP8266    
+      return size_MB == 4;
+#else
+      return false;
+#endif
 
     case DeviceModel_default:
     case DeviceModel_MAX:
@@ -631,7 +638,7 @@ void setFactoryDefault(DeviceModel model) {
 /********************************************************************************************\
    Add pre defined plugins and rules.
  \*********************************************************************************************/
-void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool activeLow) {
+void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool activeLow, bool pullUp) {
   setTaskDevice_to_TaskIndex(1, taskIndex);
   setBasicTaskValues(
     taskIndex,
@@ -641,12 +648,20 @@ void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool 
     gpio, // pin1
     -1,   // pin2
     -1);  // pin3
-  Settings.TaskDevicePin1PullUp[taskIndex] = true;
+  Settings.TaskDevicePin1PullUp[taskIndex] = pullUp;
 
   if (activeLow) {
     Settings.TaskDevicePluginConfig[taskIndex][2] = 1; // PLUGIN_001_BUTTON_TYPE_PUSH_ACTIVE_LOW;
   }
   Settings.TaskDevicePluginConfig[taskIndex][3] = 1;   // "Send Boot state" checked.
+}
+
+void addWifiShadesPlugins() {
+  addSwitchPlugin(0, 0, F("AIN1"), false, false);
+  addSwitchPlugin(1, 2, F("AIN2"), false, false);
+  addSwitchPlugin(2, 5, F("BIN1"), false, false);
+  addSwitchPlugin(3,13, F("BIN2"), false, false);
+  addSwitchPlugin(4, 4, F("STBY"), false, false);
 }
 
 void addPredefinedPlugins(const GpioFactorySettingsStruct& gpio_settings) {

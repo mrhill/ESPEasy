@@ -92,6 +92,12 @@ void ResetFactory()
 
   Settings.clearMisc();
 
+  if (ResetFactoryDefaultPreference.getDeviceModel() == DeviceMode_WifiShades) {
+    uint8_t initGpios[] = {0,2,4,5,13};
+    for(int i=0; i<5; i++)
+      Settings.setPinBootState(initGpios[i], PinBootState::Output_low);
+  }
+
   if (!ResetFactoryDefaultPreference.keepNTP()) {
     Settings.clearTimeSettings();
     Settings.UseNTP = DEFAULT_USE_NTP;
@@ -225,8 +231,12 @@ void ResetFactory()
   strcpy_P(Settings.Name, PSTR(PLUGIN_DESCR));
 #endif // ifdef PLUGIN_DESCR
 
-  addPredefinedPlugins(gpio_settings);
-  addPredefinedRules(gpio_settings);
+  if (ResetFactoryDefaultPreference.getDeviceModel() == DeviceMode_WifiShades) {
+    addWifiShadesPlugins();
+  } else {
+    addPredefinedPlugins(gpio_settings);
+    addPredefinedRules(gpio_settings);
+  }
 
 #if DEFAULT_CONTROLLER
   {

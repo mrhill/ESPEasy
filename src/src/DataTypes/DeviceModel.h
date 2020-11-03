@@ -23,6 +23,7 @@ enum DeviceModel {
   DeviceMode_Olimex_ESP32_EVB,
   DeviceMode_Olimex_ESP32_GATEWAY,
   
+  DeviceMode_WifiShades,
 
   DeviceModel_MAX
 };

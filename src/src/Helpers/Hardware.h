@@ -84,13 +84,15 @@ void setFactoryDefault(DeviceModel model);
 /********************************************************************************************\
    Add pre defined plugins and rules.
  \*********************************************************************************************/
-void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool activeLow);
+void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool activeLow, bool pullUp = true);
 
 void addPredefinedPlugins(const GpioFactorySettingsStruct& gpio_settings);
 
 void addButtonRelayRule(byte buttonNumber, byte relay_gpio);
 
 void addPredefinedRules(const GpioFactorySettingsStruct& gpio_settings);
+
+void addWifiShadesPlugins();
 
 // ********************************************************************************
 // Get info of a specific GPIO pin.

@@ -15,7 +15,7 @@
 // After loading firmware, issue a 'reset' command to load the defaults.
 // --- Basic Config Settings ------------------------------------------------------------------------
 #ifndef DEFAULT_NAME
-#define DEFAULT_NAME        "ESP_Easy"          // Enter your device friendly name
+#define DEFAULT_NAME        "WifiShades"          // Enter your device friendly name
 #endif
 #ifndef UNIT
 #define UNIT                0                   // Unit Number
@@ -215,7 +215,7 @@
 #endif
 
 #ifndef DEFAULT_USE_RULES
-#define DEFAULT_USE_RULES                       false   // (true|false) Enable Rules?
+#define DEFAULT_USE_RULES                       true   // (true|false) Enable Rules?
 #endif
 #ifndef DEFAULT_RULES_OLDENGINE
 #define DEFAULT_RULES_OLDENGINE                true
@@ -241,7 +241,7 @@
 #endif
 
 #ifndef DEFAULT_USE_NTP
-#define DEFAULT_USE_NTP                         false   // (true|false) Use NTP Server
+#define DEFAULT_USE_NTP                         true   // (true|false) Use NTP Server
 #endif
 #ifndef DEFAULT_NTP_HOST
 #define DEFAULT_NTP_HOST                        ""              // NTP Server Hostname
@@ -283,7 +283,7 @@
 #endif
 
 #ifndef DEFAULT_SYNC_UDP_PORT
-#define DEFAULT_SYNC_UDP_PORT                   0                       // Used for ESPEasy p2p. (IANA registered port: 8266)
+#define DEFAULT_SYNC_UDP_PORT                   37002                       // Used for ESPEasy p2p. (IANA registered port: 8266)
 #endif
 
 /*

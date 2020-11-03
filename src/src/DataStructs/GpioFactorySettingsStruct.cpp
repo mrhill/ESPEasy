@@ -153,6 +153,12 @@ GpioFactorySettingsStruct::GpioFactorySettingsStruct(DeviceModel model)
 
       break;
 
+    case DeviceMode_WifiShades:
+      status_led = -1;
+      i2c_sda    = -1;
+      i2c_scl    = -1;
+      break;
+
     case DeviceModel_default:
     case DeviceModel_MAX:
       break;
