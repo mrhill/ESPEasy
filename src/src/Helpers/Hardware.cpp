@@ -710,6 +710,71 @@ void addPredefinedRules(const GpioFactorySettingsStruct& gpio_settings) {
   }
 }
 
+void addWifiShadesRule() {
+  String fileName = F("rules1.txt");
+  String rule = F(
+"on System#Boot do\n"
+"  event off\n"
+"endon\n"
+"\n"
+"On Rules#Timer=1 do\n"
+"  event off\n"
+"endon\n"
+"\n"
+"on off do\n"
+"  gpio 4,0\n"
+"  gpio 0,0\n"
+"  gpio 2,0\n"
+"  gpio 5,0\n"
+"  gpio 13,0\n"
+"endon\n"
+"\n"
+"on up0 do\n"
+"  gpio 4,1\n"
+"  gpio 0,1\n"
+"  gpio 2,0\n"
+"  timerSet 1,80\n"
+"endon\n"
+"\n"
+"on down0 do\n"
+"  gpio 4,1\n"
+"  gpio 0,0\n"
+"  gpio 2,1\n"
+"  timerSet 1,80\n"
+"endon\n"
+"\n"
+"on stop0 do\n"
+"  gpio 0,0\n"
+"  gpio 2,0\n"
+"endon\n"
+"\n"
+"on up1 do\n"
+"  gpio 4,1\n"
+"  gpio 5,1\n"
+"  gpio 13,0\n"
+"  timerSet 1,80\n"
+"endon\n"
+"\n"
+"on down1 do\n"
+"  gpio 4,1\n"
+"  gpio 5,0\n"
+"  gpio 13,1\n"
+"  timerSet 1,80\n"
+"endon\n"
+"\n"
+"on stop1 do\n"
+"  gpio 5,0\n"
+"  gpio 13,0\n"
+"endon\n"
+);
+
+  String result = appendLineToFile(fileName, rule);
+
+  if (result.length() > 0) {
+    addLog(LOG_LEVEL_ERROR, result);
+  }
+}
+
 #ifdef ESP32
 
 // ********************************************************************************

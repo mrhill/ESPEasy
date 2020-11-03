@@ -93,6 +93,8 @@ void addButtonRelayRule(byte buttonNumber, byte relay_gpio);
 void addPredefinedRules(const GpioFactorySettingsStruct& gpio_settings);
 
 void addWifiShadesPlugins();
+void addWifiShadesRule();
+
 
 // ********************************************************************************
 // Get info of a specific GPIO pin.

@@ -233,6 +233,7 @@ void ResetFactory()
 
   if (ResetFactoryDefaultPreference.getDeviceModel() == DeviceMode_WifiShades) {
     addWifiShadesPlugins();
+    addWifiShadesRule();
   } else {
     addPredefinedPlugins(gpio_settings);
     addPredefinedRules(gpio_settings);
