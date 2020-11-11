@@ -156,6 +156,7 @@
 #include "src/Helpers/PeriodicalActions.h"
 #include "src/Helpers/Scheduler.h"
 #include "src/Helpers/StringGenerator_System.h"
+#include "src/Helpers/RepeatResetDetect.h"
 
 #include "src/WebServer/WebServer.h"
 
@@ -273,6 +274,7 @@ void setup()
       lastBootCause = BOOT_CAUSE_DEEP_SLEEP;
     }
     else {
+      RepeatResetDetect::onWarmBoot(RTC.repeatResetCount, RTC.repeatResetMarker);
       node_time.restoreLastKnownUnixTime(RTC.lastSysTime, RTC.deepSleepState);
       log = F("INIT : Warm boot #");
     }
@@ -282,6 +284,8 @@ void setup()
     log += ESPEasy_Scheduler::decodeSchedulerId(lastMixedSchedulerId_beforereboot);
     log += F(" Last systime: ");
     log += RTC.lastSysTime;
+    log += F(" repeatReset #");
+    log += RTC.repeatResetCount;
   }
   //cold boot (RTC memory empty)
   else
@@ -312,9 +316,17 @@ void setup()
   log += getResetReasonString();
 
   RTC.deepSleepState=0;
+  RepeatResetDetect::markBoot(RTC.repeatResetMarker);
   saveToRTC();
 
   addLog(LOG_LEVEL_INFO, log);
+
+  if (RepeatResetDetect::testTrigger(RTC.repeatResetCount)) {
+    log = F("Factory reset on repeat reset #");
+    log += RTC.repeatResetCount;
+    addLog(LOG_LEVEL_INFO, log);
+    ResetFactory();
+  }
 
   fileSystemCheck();
 //  progMemMD5check();
