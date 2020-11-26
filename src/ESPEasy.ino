@@ -321,13 +321,6 @@ void setup()
 
   addLog(LOG_LEVEL_INFO, log);
 
-  if (RepeatResetDetect::testTrigger(RTC.repeatResetCount)) {
-    log = F("Factory reset on repeat reset #");
-    log += RTC.repeatResetCount;
-    addLog(LOG_LEVEL_INFO, log);
-    ResetFactory();
-  }
-
   fileSystemCheck();
 //  progMemMD5check();
   LoadSettings();
@@ -417,6 +410,13 @@ void setup()
 
   if (deviceCount + 1 >= PLUGIN_MAX) {
     addLog(LOG_LEVEL_ERROR, F("Programming error! - Increase PLUGIN_MAX"));
+  }
+
+  if (RepeatResetDetect::testTrigger(RTC.repeatResetCount)) {
+    log = F("Factory reset on repeat reset #");
+    log += RTC.repeatResetCount;
+    addLog(LOG_LEVEL_INFO, log);
+    ResetFactory();
   }
 
   if (Settings.UseRules && isDeepSleepEnabled())

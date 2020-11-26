@@ -640,6 +640,7 @@ void setFactoryDefault(DeviceModel model) {
  \*********************************************************************************************/
 void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool activeLow, bool pullUp) {
   setTaskDevice_to_TaskIndex(1, taskIndex);
+  Settings.TaskDeviceNumber[taskIndex] = 1;
   setBasicTaskValues(
     taskIndex,
     0,    // taskdevicetimer
