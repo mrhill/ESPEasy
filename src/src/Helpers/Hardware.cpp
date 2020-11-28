@@ -657,12 +657,47 @@ void addSwitchPlugin(taskIndex_t taskIndex, byte gpio, const String& name, bool 
   Settings.TaskDevicePluginConfig[taskIndex][3] = 1;   // "Send Boot state" checked.
 }
 
+void addDummyPlugin(taskIndex_t taskIndex, const String& name, const String& val1, const String& val2) {
+  setTaskDevice_to_TaskIndex(33, taskIndex);
+  Settings.TaskDeviceNumber[taskIndex] = 33;
+  setBasicTaskValues(
+    taskIndex,
+    0,    // taskdevicetimer
+    true, // enabled
+    name, // name
+    -1,   // pin1
+    -1,   // pin2
+    -1);  // pin3
+
+  const deviceIndex_t DeviceIndex = getDeviceIndex_from_TaskIndex(taskIndex);
+  if (!validDeviceIndex(DeviceIndex)) { 
+    addLog(LOG_LEVEL_ERROR, "invalid DeviceIndex");
+    return;
+  }
+
+  if (!val1.isEmpty()) {
+    safe_strncpy(ExtraTaskSettings.TaskDeviceValueNames[0], val1.c_str(), sizeof(ExtraTaskSettings.TaskDeviceValueNames[0]));
+    Settings.TaskDevicePluginConfig[taskIndex][0] = (int16_t)Sensor_VType::SENSOR_TYPE_SINGLE;
+  }
+
+  if (!val2.isEmpty()) {
+    safe_strncpy(ExtraTaskSettings.TaskDeviceValueNames[1], val2.c_str(), sizeof(ExtraTaskSettings.TaskDeviceValueNames[1]));
+    Settings.TaskDevicePluginConfig[taskIndex][0] = (int16_t)Sensor_VType::SENSOR_TYPE_DUAL;
+  }
+  ExtraTaskSettings.TaskDeviceValueDecimals[0] = 0;
+  ExtraTaskSettings.TaskDeviceValueDecimals[1] = 0;
+
+  Settings.TaskDevicePluginConfig[taskIndex][3] = 1;   // "Send Boot state" checked.
+  SaveTaskSettings(taskIndex);
+}
+
 void addWifiShadesPlugins() {
   addSwitchPlugin(0, 0, F("AIN1"), false, false);
   addSwitchPlugin(1, 2, F("AIN2"), false, false);
   addSwitchPlugin(2, 5, F("BIN1"), false, false);
   addSwitchPlugin(3,13, F("BIN2"), false, false);
   addSwitchPlugin(4, 4, F("STBY"), false, false);
+  addDummyPlugin (5, F("CFG"), F("inv0"), F("inv1"));
 }
 
 void addPredefinedPlugins(const GpioFactorySettingsStruct& gpio_settings) {
@@ -732,15 +767,15 @@ void addWifiShadesRule() {
 "\n"
 "on up0 do\n"
 "  gpio 4,1\n"
-"  gpio 0,1\n"
-"  gpio 2,0\n"
+"  gpio 0,=1-[CFG#inv0]\n"
+"  gpio 2,[CFG#inv0]\n"
 "  timerSet 1,80\n"
 "endon\n"
 "\n"
 "on down0 do\n"
 "  gpio 4,1\n"
-"  gpio 0,0\n"
-"  gpio 2,1\n"
+"  gpio 0,[CFG#inv0]\n"
+"  gpio 2,=1-[CFG#inv0]\n"
 "  timerSet 1,80\n"
 "endon\n"
 "\n"
@@ -751,15 +786,15 @@ void addWifiShadesRule() {
 "\n"
 "on up1 do\n"
 "  gpio 4,1\n"
-"  gpio 5,1\n"
-"  gpio 13,0\n"
+"  gpio 5,=1-[CFG#inv1]\n"
+"  gpio 13,[CFG#inv1]\n"
 "  timerSet 1,80\n"
 "endon\n"
 "\n"
 "on down1 do\n"
 "  gpio 4,1\n"
-"  gpio 5,0\n"
-"  gpio 13,1\n"
+"  gpio 5,[CFG#inv1]\n"
+"  gpio 13,=1-[CFG#inv1]\n"
 "  timerSet 1,80\n"
 "endon\n"
 "\n"
