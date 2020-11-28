@@ -13,6 +13,7 @@
 #include "../Helpers/Misc.h"
 #include "../Helpers/Rules_calculate.h"
 #include "../Helpers/StringConverter.h"
+#include "../Globals/Settings.h"
 
 //      taskIndex = (event->Par1 - 1);   Par1 is here for 1 ... TASKS_MAX
 //	varNr = event->Par2 - 1;
@@ -97,6 +98,11 @@ String Command_Task_ValueSet(struct EventStruct *event, const char *Line)
 
     // FIXME TD-er: The return code of Calculate is not used.
     UserVar[uservarIndex] = result;
+
+    if (Settings.TaskDeviceNumber[taskIndex] == 33) {
+      Settings.TaskDevicePluginConfigFloat[taskIndex][varNr] = result;
+    }
+
   } else  {
     // TODO: Get Task description and var name
     serialPrintln(String(UserVar[uservarIndex]));

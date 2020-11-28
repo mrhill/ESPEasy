@@ -75,6 +75,10 @@ boolean Plugin_033(byte function, struct EventStruct *event, String& string)
 
     case PLUGIN_INIT:
       {
+        if (event->TaskIndex != INVALID_TASK_INDEX) {
+          for (int i=0; i<VARS_PER_TASK; i++)
+            UserVar[event->TaskIndex * VARS_PER_TASK + i] = Settings.TaskDevicePluginConfigFloat[event->TaskIndex][i];
+        }
         success = true;
         break;
       }
@@ -115,6 +119,7 @@ boolean Plugin_033(byte function, struct EventStruct *event, String& string)
                 addLog(LOG_LEVEL_INFO,log);
               }
               UserVar[event->BaseVarIndex+event->Par2-1]=floatValue;
+              Settings.TaskDevicePluginConfigFloat[event->TaskIndex][(event->Par2-1) & 3] = floatValue;
               success = true;
             } else { // float conversion failed!
               if (loglevelActiveFor(LOG_LEVEL_ERROR))
