@@ -42,6 +42,18 @@
 #include <esp_partition.h>
 #endif
 
+#ifdef ESP32
+String patch_fname(const String& fname) {
+  if (fname.startsWith(F("/"))) {
+    return fname;
+  }
+  return String(F("/")) + fname;
+}
+#endif
+#ifdef ESP8266
+#define patch_fname(F) (F)
+#endif
+
 /********************************************************************************************\
    file system error handling
    Look here for error # reference: https://github.com/pellepl/spiffs/blob/master/src/spiffs.h
@@ -102,7 +114,7 @@ String appendToFile(const String& fname, const uint8_t *data, unsigned int size)
 }
 
 bool fileExists(const String& fname) {
-  return ESPEASY_FS.exists(fname);
+  return ESPEASY_FS.exists(patch_fname(fname));
 }
 
 fs::File tryOpenFile(const String& fname, const String& mode) {
@@ -112,14 +124,14 @@ fs::File tryOpenFile(const String& fname, const String& mode) {
   if ((mode == "r") && !fileExists(fname)) {
     return f;
   }
-  f = ESPEASY_FS.open(fname, mode.c_str());
+  f = ESPEASY_FS.open(patch_fname(fname), mode.c_str());
   STOP_TIMER(TRY_OPEN_FILE);
   return f;
 }
 
 bool tryRenameFile(const String& fname_old, const String& fname_new) {
   if (fileExists(fname_old) && !fileExists(fname_new)) {
-    return ESPEASY_FS.rename(fname_old, fname_new);
+    return ESPEASY_FS.rename(patch_fname(fname_old), patch_fname(fname_new));
   }
   return false;
 }
@@ -127,7 +139,7 @@ bool tryRenameFile(const String& fname_old, const String& fname_new) {
 bool tryDeleteFile(const String& fname) {
   if (fname.length() > 0)
   {
-    bool res = ESPEASY_FS.remove(fname);
+    bool res = ESPEASY_FS.remove(patch_fname(fname));
 
     // A call to GarbageCollection() will at most erase a single block. (e.g. 8k block size)
     // A deleted file may have covered more than a single block, so try to clear multiple blocks.
@@ -717,9 +729,7 @@ String LoadTaskSettings(taskIndex_t TaskIndex)
 
   START_TIMER
   ExtraTaskSettings.clear();
-  String result = "";
-  result =
-    LoadFromFile(SettingsType::Enum::TaskSettings_Type, TaskIndex, (byte *)&ExtraTaskSettings, sizeof(struct ExtraTaskSettingsStruct));
+  const String result = LoadFromFile(SettingsType::Enum::TaskSettings_Type, TaskIndex, (byte *)&ExtraTaskSettings, sizeof(struct ExtraTaskSettingsStruct));
 
   // After loading, some settings may need patching.
   ExtraTaskSettings.TaskIndex = TaskIndex; // Needed when an empty task was requested
@@ -884,8 +894,6 @@ String InitFile(const String& fname, int datasize)
   fs::File f = tryOpenFile(fname, "w");
 
   if (f) {
-    SPIFFS_CHECK(f, fname.c_str());
-
     for (int x = 0; x < datasize; x++)
     {
       // See https://github.com/esp8266/Arduino/commit/b1da9eda467cc935307d553692fdde2e670db258#r32622483
@@ -1011,8 +1019,6 @@ String ClearInFile(const char *fname, int index, int datasize)
   fs::File f = tryOpenFile(fname, "r+");
 
   if (f) {
-    SPIFFS_CHECK(f,                          fname);
-
     SPIFFS_CHECK(f.seek(index, fs::SeekSet), fname);
 
     for (int x = 0; x < datasize; x++)
@@ -1275,7 +1281,7 @@ bool getCacheFileCounters(uint16_t& lowest, uint16_t& highest, size_t& filesizeH
   highest         = 0;
   filesizeHighest = 0;
 #ifdef ESP8266
-  Dir dir = ESPEASY_FS.openDir("cache");
+  Dir dir = ESPEASY_FS.openDir(F("cache"));
 
   while (dir.next()) {
     String filename = dir.fileName();
@@ -1294,7 +1300,7 @@ bool getCacheFileCounters(uint16_t& lowest, uint16_t& highest, size_t& filesizeH
   }
 #endif // ESP8266
 #ifdef ESP32
-  File root = ESPEASY_FS.open("/cache");
+  File root = ESPEASY_FS.open(F("/cache"));
   File file = root.openNextFile();
 
   while (file)
