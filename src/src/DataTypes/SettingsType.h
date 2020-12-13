@@ -16,6 +16,7 @@ public:
     NotificationSettings_Type,
     SecuritySettings_Type,
     ExtdControllerCredentials_Type,
+    GroupSettings_Type,
 
     SettingsType_MAX
   };
@@ -24,6 +25,7 @@ public:
     FILE_CONFIG_type,
     FILE_NOTIFICATION_type,
     FILE_SECURITY_type,
+    FILE_GROUPS_type,
     FILE_UNKNOWN_type
   };
 

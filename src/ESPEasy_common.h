@@ -61,6 +61,7 @@ namespace std
   #define FILE_CONFIG       "config.dat"
   #define FILE_SECURITY     "security.dat"
   #define FILE_NOTIFICATION "notification.dat"
+  #define FILE_GROUPS       "groups.dat"
   #define FILE_RULES        "rules1.txt"
   #include <lwip/init.h>
   #ifndef LWIP_VERSION_MAJOR

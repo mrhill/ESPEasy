@@ -13,5 +13,7 @@ String Command_Settings_Save(struct EventStruct *event, const char* Line);
 String Command_Settings_Load(struct EventStruct *event, const char* Line);
 String Command_Settings_Print(struct EventStruct *event, const char* Line);
 String Command_Settings_Reset(struct EventStruct *event, const char* Line);
+String Command_GroupName(struct EventStruct *event, const char* Line);
+String Command_GroupSet(struct EventStruct *event, const char* Line);
 
 #endif // COMMAND_SETTINGS_H

@@ -171,6 +171,8 @@ unsigned int SettingsType::getSVGcolor(Enum settingsType) {
       return 0xff00a2;
     case Enum::ExtdControllerCredentials_Type:
       return 0xc300ff;
+    case Enum::GroupSettings_Type:
+      return 0xEE6352;
     case Enum::SettingsType_MAX:
       break;
   }
@@ -193,6 +195,8 @@ SettingsType::SettingsFileEnum SettingsType::getSettingsFile(Enum settingsType)
     case Enum::SecuritySettings_Type:
     case Enum::ExtdControllerCredentials_Type:
       return SettingsFileEnum::FILE_SECURITY_type;
+    case Enum::GroupSettings_Type:
+      return SettingsFileEnum::FILE_GROUPS_type;
 
     case Enum::SettingsType_MAX:
       break;
@@ -207,6 +211,7 @@ String SettingsType::getSettingsFileName(Enum settingsType) {
     case SettingsFileEnum::FILE_CONFIG_type:        return F(FILE_CONFIG);
     case SettingsFileEnum::FILE_NOTIFICATION_type:  return F(FILE_NOTIFICATION);
     case SettingsFileEnum::FILE_SECURITY_type:      return F(FILE_SECURITY);
+    case SettingsFileEnum::FILE_GROUPS_type:        return F(FILE_GROUPS);
     case SettingsFileEnum::FILE_UNKNOWN_type:       break;
   }
   return "";

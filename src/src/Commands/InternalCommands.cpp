@@ -238,6 +238,8 @@ bool executeInternalCommand(const char *cmd, struct EventStruct *event, const ch
       COMMAND_CASE_R("gateway", Command_Gateway, 1);        // Network Command
       COMMAND_CASE_A(      "gpio", Command_GPIO,        2); // Gpio.h
       COMMAND_CASE_A("gpiotoggle", Command_GPIO_Toggle, 1); // Gpio.h
+      COMMAND_CASE_A("groupname", Command_GroupName, 2);
+      COMMAND_CASE_A("groupset", Command_GroupSet, 3);
       break;
     }
     case 'i': {

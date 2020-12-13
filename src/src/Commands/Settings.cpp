@@ -9,12 +9,14 @@
 
 #include "../Globals/SecuritySettings.h"
 #include "../Globals/Settings.h"
+#include "../Globals/Groups.h"
 
 #include "../Helpers/ESPEasy_FactoryDefault.h"
 #include "../Helpers/ESPEasy_Storage.h"
 #include "../Helpers/Memory.h"
 #include "../Helpers/Misc.h"
 #include "../Helpers/StringConverter.h"
+#include "../Helpers/StringParser.h"
 
 
 String Command_Settings_Build(struct EventStruct *event, const char* Line)
@@ -52,6 +54,39 @@ String Command_Settings_Name(struct EventStruct *event, const char* Line)
 				      1);
 }
 
+String Command_GroupName(struct EventStruct *event, const char* Line)
+{
+  	unsigned const group = event->Par1;
+  	if (group < 8)
+  	{
+		return Command_GetORSetString(event, F("GroupName:"),
+						Line,
+						GroupInfos[group].name,
+						sizeof(GroupInfos[group].name),
+						2);
+  	}
+  	return return_command_failed();
+}
+
+String Command_GroupSet(struct EventStruct *event, const char* Line)
+{
+  	int const group = event->Par1;
+  	if ((unsigned)group < 8) {
+		const uint8_t mask = (1 << group);
+		if (event->Par2 < 0) {// -1 -> delete group
+			for(unsigned i=0; i<sizeof(Groups); i++)
+				Groups[i] = Groups[i] &~ mask;
+		} else {
+			const uint8_t unit = event->Par2;
+			const unsigned enable = event->Par3; // bit0: M1, bit1: M2
+			Groups[unit] = (Groups[unit] &~ mask) | ((enable&1)<<group);
+			Groups[(int)unit+256] = (Groups[(int)unit+256] &~ mask) | (((enable>>1)&1)<<group);
+		}
+	  	return return_command_success();
+  	}
+  	return return_command_failed();
+}
+
 String Command_Settings_Password(struct EventStruct *event, const char* Line)
 {
 	return Command_GetORSetString(event, F("Password:"),
@@ -65,6 +100,7 @@ String Command_Settings_Password(struct EventStruct *event, const char* Line)
 String Command_Settings_Save(struct EventStruct *event, const char* Line)
 {
 	SaveSettings();
+	SaveGroupSettings();
 	return return_command_success();
 }
 

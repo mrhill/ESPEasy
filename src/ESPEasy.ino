@@ -352,6 +352,7 @@ void setup()
     WifiScan(false, false); 
   }
 
+  LoadGroupSettings();
 //  setWifiMode(WIFI_STA);
   checkRuleSets();
 

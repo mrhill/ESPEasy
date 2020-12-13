@@ -7,6 +7,7 @@
 #include "../Globals/Nodes.h"
 #include "../Globals/Device.h"
 #include "../Globals/Plugins.h"
+#include "../Globals/Groups.h"
 #include "../Helpers/ESPEasy_Storage.h"
 #include "../Helpers/Hardware.h"
 #include "../Helpers/Numerical.h"
@@ -111,6 +112,7 @@ void handle_json()
   bool showDataAcquisition    = true;
   bool showTaskDetails        = true;
   bool showNodes              = true;
+  bool showGroups             = true;
   {
     String view = web_server.arg("view");
 
@@ -124,6 +126,7 @@ void handle_json()
         showDataAcquisition = false;
         showTaskDetails     = false;
         showNodes           = false;
+        showGroups          = false;
       }
     }
   }
@@ -250,6 +253,24 @@ void handle_json()
       if (comma_between) {
         addHtml(F("],\n")); // close array if >0 nodes
       }
+    }
+    if (showGroups) {
+      addHtml(F("\"groups\":[\n"));
+      for (unsigned g=0; g<8; g++) {
+        if (g) addHtml(",");
+        addHtml("{");
+
+        stream_next_json_object_value(F("id"), String(g));
+        stream_next_json_object_value(F("name"), String(GroupInfos[g].name));
+
+        String members = F("\"members\": [");
+        for (unsigned m=0; m<512; m++) {
+          if (Groups[m] & (1<<g)) { if (!members.endsWith(F("["))) {members+=',';} members += m; }
+        }
+        members += F("]\n}");
+        addHtml(members);
+      }
+      addHtml(F("],\n"));
     }
   }
 

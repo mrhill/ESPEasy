@@ -169,6 +169,9 @@ String SaveNotificationSettings(int NotificationIndex, byte *memAddress, int dat
 String LoadNotificationSettings(int NotificationIndex, byte *memAddress, int datasize);
 
 
+void SaveGroupSettings();
+void LoadGroupSettings();
+
 /********************************************************************************************\
    Init a file with zeros on file system
  \*********************************************************************************************/

@@ -21,6 +21,7 @@
 #include "../Globals/ResetFactoryDefaultPref.h"
 #include "../Globals/SecuritySettings.h"
 #include "../Globals/Settings.h"
+#include "../Globals/Groups.h"
 
 #include "../Helpers/ESPEasyRTC.h"
 #include "../Helpers/ESPEasy_FactoryDefault.h"
@@ -881,6 +882,22 @@ String LoadNotificationSettings(int NotificationIndex, byte *memAddress, int dat
 {
   checkRAM(F("LoadNotificationSettings"));
   return LoadFromFile(SettingsType::Enum::NotificationSettings_Type, NotificationIndex, memAddress, datasize);
+}
+
+void SaveGroupSettings()
+{
+  checkRAM(F("SaveGroupSettings"));
+  String fname = SettingsType::getSettingsFileName(SettingsType::Enum::GroupSettings_Type);
+  SaveToFile(fname.c_str(), 0, (const byte*)Groups, sizeof(Groups));
+  SaveToFile(fname.c_str(), sizeof(Groups), (const byte*)GroupInfos, sizeof(GroupInfos));
+}
+
+void LoadGroupSettings()
+{
+  checkRAM(F("LoadGroupSettings"));
+  String fname = SettingsType::getSettingsFileName(SettingsType::Enum::GroupSettings_Type);
+  LoadFromFile(fname.c_str(), 0, (byte*)Groups, sizeof(Groups));
+  LoadFromFile(fname.c_str(), sizeof(Groups), (byte*)GroupInfos, sizeof(GroupInfos));
 }
 
 /********************************************************************************************\

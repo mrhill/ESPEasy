@@ -16,6 +16,7 @@
 #include "../Globals/RTC.h"
 #include "../Globals/ResetFactoryDefaultPref.h"
 #include "../Globals/SecuritySettings.h"
+#include "../Globals/Groups.h"
 
 #include "../Helpers/_CPlugin_Helper.h"
 #include "../Helpers/ESPEasyRTC.h"
@@ -89,6 +90,9 @@ void ResetFactory()
   #endif // ifdef USES_NOTIFIER
   fname = FILE_RULES;
   InitFile(fname.c_str(), 0);
+
+  fname = FILE_GROUPS;
+  InitFile(fname.c_str(), sizeof(Groups)+sizeof(GroupInfos));
 
   Settings.clearMisc();
 
