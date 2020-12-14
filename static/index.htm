@@ -1,0 +1,132 @@
+<head><title>Shade Control</title></head>
+<style>
+body {
+	margin: 0;
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	text-align: center;
+	font-size: 6vw;
+}
+
+h1 {
+	padding-top: 8vw;
+	font-size: 8vw;
+}
+
+button {
+	display: inline-block;
+	margin: 2vw;
+	border: 0;
+	border-radius: .5vw;
+	padding: 0 2vw;
+	cursor: pointer;
+	font-size: 6vw;
+	background-color: #ccc;
+	color: #000;
+	line-height: 1.5;
+}
+button:hover {
+	opacity: 0.85;
+}
+
+#setup {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: none;
+	border: 1px solid #CCC;
+}
+.big {
+	text-align: left;
+	width: 85%;
+	padding: 4vw 0 4vw 20vw;
+	background-color: #2af;
+	color: #fff;
+	font-size: 8vw;
+	font-weight: 700;
+}
+
+ul {
+	list-style-type: none;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 8vw 0 0 0;
+	width: 97vw;
+}
+ul>li {
+	float: left;
+	font-size: 4vw;
+	margin: 0vw;
+	width: 24vw;
+	height: 3em;
+	overflow: hidden;
+	position: relative;
+	border: 1px solid #CCC;
+	align-items: center;
+}
+label {
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+label:hover{
+	background: #ddd;
+}
+label>span {
+	display: table-cell;
+	vertical-align: middle;
+}
+input[type="radio"] {
+	opacity: 0;
+}
+input[type="radio"]:checked+label {
+	background: #CCC;
+}
+
+#err {
+	display: none;
+	color: red;
+}
+</style>
+
+<script>
+var units = {};
+var groups = [];
+function sel() { return document.querySelectorAll('input[type="radio"]:checked')[0].id; }
+function load() {
+	var ul = document.getElementsByTagName('ul')[0];
+	fetch("json").then(r=>r.json()).then(dev=>{
+		dev['nodes'].forEach(u=>{ units[u['nr']]=u['ip']; });
+		groups = dev['groups'];
+		for(i=0; i<8; i++) {
+			let name = groups[i]['members'].length && (groups[i]['name'] || ('group '+i)) || '';
+			ul.insertAdjacentHTML('beforeend', `<li><input type="radio" id="${i}" name="sel"/><label for="${i}"><span>${name}</span></label></li>`);
+		}
+		ul.firstElementChild.firstElementChild.checked = true;
+	}).catch(()=>{
+		document.getElementById('err').style.display = 'block';
+	});
+}
+function ctrl(ev, group) {
+	groups[group]['members'].forEach(m=>{
+		fetch('http://'+units[m&255]+'/tools?cmd=event,'+ev+(m>>8));
+	})
+}
+document.addEventListener("DOMContentLoaded", load);
+</script>
+
+<body>
+	<button id="setup" onclick="location.href='setup.htm'" class="buttonx">&#9881;</button>
+	<h1>Shade Control</h1>
+	<div><button onclick="ctrl('up',sel())" class="big">&#9650; Up</button></div>
+	<div><button onclick="ctrl('stop',sel())" class="big">&#9632; Stop</button></div>
+	<div><button onclick="ctrl('down',sel())" class="big">&#9660; Down</button></div>
+
+	<div id="err">Error loading groups</div>
+	<ul/>
+</body>

@@ -1,0 +1,150 @@
+<head><title>Shade Groups</title></head>
+<style>
+
+body {
+	margin: 0;
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	text-align: center;
+	font-size: 6vw;
+}
+
+h1 {
+	font-size: 8vw;
+}
+
+table {
+	font-size: 4vw;
+	margin-left: auto;
+	margin-right: auto;
+	border-spacing: 0;
+	border: 1px solid grey;
+}
+table, th, td {
+	text-align: center;
+	padding: 1vw;
+}
+input {font-size: 4vw;}
+input[type=text] { width: 50vw; }
+input[type=checkbox] {
+	height: 6vw;
+	width: 6vw;
+}
+
+button {
+	display: inline-block;
+	margin: 1vw;
+	border: 0;
+	border-radius: .5vw;
+	padding: 1vw 4vw;
+	cursor: pointer;
+	font-size: 6vw;
+	background-color: #ccc;
+	color: #000;
+	line-height: 1.5;
+}
+button:hover {
+	opacity: 0.85;
+}
+.act {
+	background-color: #2af;
+	color: #fff;
+}
+
+#err,#err2 {
+	display: none;
+	border-radius: 9px;
+	padding: 1em;
+	background: pink;
+	color: red;
+	width: 90%;
+}
+#saved {
+	display: none;
+	border-radius: 9px;
+	padding: 1em;
+	background: #CFC;
+	color: #000;
+	width: 90%;
+}
+</style>
+
+<script>
+var group = 0;
+function hideload() {document.getElementById('loading').style.display = 'none';}
+function load() {
+	fetch("json").then(r=>r.json()).then(dev=>{
+		hideload();
+
+		const param = new URLSearchParams(window.location.search);
+		group = param.get("id")||0;
+		document.getElementById('g').innerHTML += group;
+
+		let tbl = document.getElementById('tbl');
+		for(i=0; i<255; i++) {
+			tbl.insertAdjacentHTML('beforeend', `<tr><td>${i}</td><td><input id="u${i}" readonly type="text"/></td><td><input id="m${i}" type="checkbox"/></td><td><input id="m${i+256}" type="checkbox"/></td></tr>`);
+		}
+
+		dev['nodes'].forEach(node => {
+			let u = document.getElementById('u'+node['nr']);
+			u.value = node['name'];
+		});
+
+		let g = dev['groups'][group];
+		if (g) {
+			document.getElementById('n').value = g['name'];
+			g['members'].forEach(m => {
+				document.getElementById('m'+m).checked = true;
+			});
+		}
+
+		Array.prototype.slice.call(document.querySelectorAll('tr'),1).forEach(row => {
+			if (!row.children[1].firstChild.value && !row.children[2].firstChild.checked && !row.children[3].firstChild.checked) {
+				row.style.display = 'none';
+			}
+		});
+	}).catch(()=>{
+		hideload();
+		document.getElementById('err').style.display = 'block';
+	});
+}
+function save() {
+	fetch(`/tools?cmd=GroupSet,${group},-1`).then(r=>r.blob()).then(()=>{
+		var urls = [`/tools?cmd=GroupName,${group},"${document.getElementById('n').value}"`];
+		Array.prototype.slice.call(document.querySelectorAll('tr'),1).forEach(row => {
+			let m = (+row.children[2].firstChild.checked)|((+row.children[3].firstChild.checked)<<1);
+			if (m) { urls.push(`/tools?cmd=GroupSet,${group},${row.firstChild.textContent},${m}`); }
+		});
+		Promise.all(urls.map(url => fetch(url).then(resp => resp.text()))).then(texts => {
+			document.getElementById('err2').style.display = 'none';
+			document.getElementById('saved').style.display = 'block';
+			fetch('/tools?cmd=save');
+		});
+	}).catch(()=>{
+		hideload();
+		document.getElementById('err2').style.display = 'block';
+	});
+}
+document.addEventListener("DOMContentLoaded", load);
+</script>
+
+<body>
+	<div id="err">Error loading from device <button onclick="location.reload()">Retry</button></div>
+	<div id="err2">Error saving data</div>
+	<div id="saved">Data saved</div>
+
+	<h1 id="g">Edit Group </h1>
+	<p>Group Name: <input type="text" id="n" maxlength="31"></p>
+
+	<p>Members:</p>
+	<table id="tbl">
+		<tr><th colspan="2">Shade Unit</th><th>Motor 1</th><th>Motor 2</th></tr>
+	</table>
+
+	<div class="content">
+		<p id="loading">Loading data...</p>
+		<p>
+			<button onclick="save()" class="act">Save</button>
+			<button onclick="location.href='groups.htm'">Back</button>
+		</p>
+	</div>
+</body>

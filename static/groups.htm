@@ -1,0 +1,83 @@
+<head><title>Shade Groups</title></head>
+<style>
+body {
+	margin: 0;
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	text-align: center;
+	font-size: 6vw;
+}
+
+table {
+	font-size: 5vw;
+	margin-left: auto;
+	margin-right: auto;
+	border-spacing: 0;
+}
+
+button {
+	display: inline-block;
+	margin: .5vw;
+	border: 0;
+	border-radius: .5vw;
+	padding: 1vw 2vw;
+	cursor: pointer;
+	font-size: 5vw;
+	background-color: #ccc;
+	color: #000;
+	line-height: 1.5;
+}
+button:hover {
+	opacity: 0.85;
+}
+.act {
+	background-color: #2af;
+	color: #fff;
+}
+
+input {font-size: 5vw;}
+input[type=text] { width: 70vw; }
+
+#err {
+	display: none;
+	padding: 1vw;
+	background: pink;
+	color: red;
+	width: 100%;
+}
+</style>
+
+<script>
+function hideload() {document.getElementById('loading').style.display = 'none';}
+function load() {
+	fetch("json").then(r=>r.json()).then(dev=>{
+		hideload();
+		var el = document.getElementById('tbl');
+		for (i=0; i<8; i++) {
+			el.insertAdjacentHTML('beforeend', `<tr><td>${i}</td><td><input readonly type="text" id="g${i}" value="${dev['groups'][i]['name']}"></td><td><button class="act" onclick="location.href='group.htm?id=${i}'" class="button">Edit</button></td></tr>`);
+		}
+	}).catch(()=>{
+		hideload();
+		document.getElementById('err').style.display = 'block';
+	});
+}
+function save() {
+	fetch('/tools?cmd=name,'+document.querySelector('input#name').value.trim());
+	fetch('/tools?cmd=unit,'+document.querySelector('input#unit').value.trim());
+	inv(document.querySelector('input#inv1'));
+	inv(document.querySelector('input#inv2'));
+	fetch('/tools?cmd=save');
+}
+document.addEventListener("DOMContentLoaded", load);
+</script>
+
+<body>
+	<div id="err">Error loading from device <button onclick="location.reload()">Retry</button></div>
+
+	<h2>Shade Groups</h2>
+	<table id="tbl">
+		<tr><th>No</th><th>Name</th></tr>
+	</table>
+	<p id="loading">Loading data...</p>
+
+	<p><button onclick="location.href='setup.htm'">Back</button></p>
+</body>

@@ -1,0 +1,123 @@
+<head><title>Shade Setup</title></head>
+<style>
+body {
+	margin: 0;
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	text-align: center;
+	font-size: 6vw;
+}
+
+h1 {
+	font-size: 8vw;
+}
+
+table {
+	font-size: 5vw;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+button {
+	display: inline-block;
+	margin: .5vw;
+	border: 0;
+	border-radius: .5vw;
+	padding: 1vw 2vw;
+	cursor: pointer;
+	font-size: 6vw;
+	background-color: #ccc;
+	color: #000;
+	line-height: 1.5;
+}
+button:hover {
+	opacity: 0.85;
+}
+.med {
+	text-align: left;
+	width: 25rem;
+	padding: 1rem 3rem;
+	background-color: #2af;
+	color: #fff;
+	font-weight: 500;
+	font-size: 4rem;
+}
+.act {
+	background-color: #2af;
+	color: #fff;
+}
+
+input {font-size: 5vw;}
+input[type=text] { width: 25rem; }
+input[type=number] { width: 7rem; }
+input[type=checkbox] {
+	height: 5vw;
+	width: 5vw;
+	margin: 2vw 2vw;
+}
+
+#err {
+	display: none;
+	padding: 1vw;
+	background: pink;
+	color: red;
+	width: 100%;
+}
+</style>
+
+<script>
+function load() {
+	fetch("/json").then(r=>r.json()).then(dev=>{
+		document.querySelector('input#name').value = dev['System']['Unit Name'];
+		document.querySelector('input#unit').value = dev['System']['Unit Number'];
+		document.querySelector('input#inv1').checked = dev['Sensors'][5]['TaskValues'][0]['Value'];
+		document.querySelector('input#inv2').checked = dev['Sensors'][5]['TaskValues'][1]['Value'];
+		document.querySelector('input#ip').value = dev['WiFi']['IP Address'];
+	}).catch(()=>{
+		document.getElementById('err').style.display = 'block';
+	});
+}
+function inv(cb) { fetch('/tools?cmd=TaskValueSet,6,'+cb.id.slice(-1)+','+(+cb.checked)); }
+function save() {
+	fetch('/tools?cmd=name,'+document.querySelector('input#name').value.trim());
+	fetch('/tools?cmd=unit,'+document.querySelector('input#unit').value.trim());
+	inv(document.querySelector('input#inv1'));
+	inv(document.querySelector('input#inv2'));
+	fetch('/tools?cmd=save');
+}
+document.addEventListener("DOMContentLoaded", load);
+</script>
+
+<body>
+	<div id="err">Error loading from device <button onclick="location.reload()">Retry</button></div>
+
+	<p>
+		<button onclick="location.href='groups.htm'">Edit Groups</button>
+		<button onclick="location.href='/'">Home</button>
+		<button onclick="location.href='/config'">&#9881;Expert</button>
+	</p>
+
+		<div class="content">
+
+		<h1>Shade Setup</h1>
+
+		<table>
+			<tr><td>IP Address:</td><td><input readonly type="text" id="ip"></td></tr>
+			<tr><td>Unit Name:</td><td><input type="text" id="name" maxlength="25"></td></tr>
+			<tr><td>Unit Number:</td><td><input type="number" id="unit" min="0" max="126" value="8"></td></tr>
+
+			<tr><td><br></td></tr>
+
+			<tr><th>Motor 1</th><th>Motor 2</th></tr>
+			<tr><td><button onclick="fetch('/tools?cmd=event+up0')" class="med">&#9650; Up</button></td>
+				<td><button onclick="fetch('/tools?cmd=event+up1')" class="med">&#9650; Up</button ></td></tr>
+			<tr><td><button onclick="fetch('/tools?cmd=event+stop0')" class="med">&#9632; Stop</button></td>
+				<td><button onclick="fetch('/tools?cmd=event+stop1')" class="med">&#9632; Stop</button></td></tr>
+			<tr><td><button onclick="fetch('/tools?cmd=event+down0')" class="med">&#9660; Down</button></td>
+				<td><button onclick="fetch('/tools?cmd=event+down1')" class="med">&#9660; Down</button></td></tr>
+			<tr><td><input id="inv1" type="checkbox" onclick="inv(this)"/><label for="inv1">Invert &#8645;</label></td>
+				<td><input id="inv2" type="checkbox" onclick="inv(this)"/><label for="inv2">Invert &#8645;</label></td></tr>
+		</table>
+
+		<p><button class="act" onclick="save()">Save Settings</button></p>
+	</div>
+</body>
