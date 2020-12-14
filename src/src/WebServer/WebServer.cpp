@@ -218,6 +218,9 @@ void WebServerInit()
   web_server.on("/",                 handle_root);
   #endif
   #ifdef WEBSERVER_ADVANCED
+  web_server.on(F("/main"),          handle_main);
+  #endif
+  #ifdef WEBSERVER_ADVANCED
   web_server.on(F("/advanced"),      handle_advanced);
   #endif
   #ifdef WEBSERVER_CONFIG
@@ -428,9 +431,9 @@ void getWebPageTemplateDefaultHead(String& tmpl, bool addMeta, bool addJS) {
 
 void getWebPageTemplateDefaultHeader(String& tmpl, const String& title, bool addMenu) {
   tmpl += F("<header class='headermenu'>"
-            "<h1>ESP Easy Mega: ");
+            "<a class=\"menu\" href=\"/\"><h1>ESP Easy Mega: ");
   tmpl += title;
-  tmpl += F("</h1><BR>");
+  tmpl += F("</h1></a><BR>");
 
   if (addMenu) { tmpl += F("{{menu}}"); }
   tmpl += F("</header>");
@@ -447,11 +450,7 @@ void getWebPageTemplateDefaultContentSection(String& tmpl) {
 }
 
 void getWebPageTemplateDefaultFooter(String& tmpl) {
-  tmpl += F("<footer>"
-            "<br>"
-            "<h6>Powered by <a href='http://www.letscontrolit.com' style='font-size: 15px; text-decoration: none'>Let's Control It</a> community</h6>"
-            "</footer>"
-            "</body></html>"
+  tmpl += F("</body></html>"
             );
 }
 
@@ -510,7 +509,7 @@ String getGpMenuLabel(byte index) {
 
 String getGpMenuURL(byte index) {
   switch (index) {
-    case MENU_INDEX_MAIN          : return F("/");             
+    case MENU_INDEX_MAIN          : return F("/main");
     case MENU_INDEX_CONFIG        : return F("/config");       
     case MENU_INDEX_CONTROLLERS   : return F("/controllers");  
     case MENU_INDEX_HARDWARE      : return F("/hardware");     

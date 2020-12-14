@@ -25,6 +25,8 @@
 #include "../../ESPEasy_fdwdecl.h"
 #include "../../ESPEasy-Globals.h"
 
+static void handle_main_(String& sCommand);
+
 // ********************************************************************************
 // Web Interface root page
 // ********************************************************************************
@@ -55,8 +57,6 @@ void handle_root() {
   boolean rebootCmd = strcasecmp_P(sCommand.c_str(), PSTR("reboot")) == 0;
   sendHeadandTail_stdtemplate(_HEAD, rebootCmd);
 
-  int freeMem = ESP.getFreeHeap();
-
   // TODO: move this to handle_tools, from where it is actually called?
 
   // have to disconnect or reboot from within the main loop
@@ -83,8 +83,23 @@ void handle_root() {
     return;
   } else {
     handle_command_from_web(EventValueSource::Enum::VALUE_SOURCE_HTTP, sCommand);
+    handle_main_(sCommand);
+  }
+}
+
+void handle_main() {
+  if (!isLoggedIn()) { return; }
+  navMenuIndex = 0;
+  TXBuffer.startStream();
+  sendHeadandTail_stdtemplate(_HEAD, false);
+  String sCommand;
+  handle_main_(sCommand);
+}
+
+static void handle_main_(String& sCommand) {
     printToWeb     = false;
     printToWebJSON = false;
+    int freeMem = ESP.getFreeHeap();
 
     addHtml(F("<form>"));
     html_table_class_normal();
@@ -267,7 +282,7 @@ void handle_root() {
     printWebString = "";
     printToWeb     = false;
     sendHeadandTail_stdtemplate(_TAIL);
-  }
+
   TXBuffer.endStream();
 }
 

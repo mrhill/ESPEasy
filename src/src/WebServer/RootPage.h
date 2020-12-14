@@ -10,6 +10,7 @@
 // Web Interface root page
 // ********************************************************************************
 void handle_root();
+void handle_main();
 
 #endif // ifdef WEBSERVER_ROOT
 
