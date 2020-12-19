@@ -664,7 +664,7 @@ void addDummyPlugin(taskIndex_t taskIndex, const String& name, const String& val
   Settings.TaskDeviceNumber[taskIndex] = 33;
   setBasicTaskValues(
     taskIndex,
-    0,    // taskdevicetimer
+    65535,// taskdevicetimer
     true, // enabled
     name, // name
     -1,   // pin1
