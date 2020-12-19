@@ -229,7 +229,11 @@ String getValue(LabelType::Enum label) {
     case LabelType::CONNECTED:              return format_msec_duration(WiFiEventData.lastConnectMoment.millisPassedSince());
 
     // Use only the nr of seconds to fit it in an int32, plus append '000' to have msec format again.
-    case LabelType::CONNECTED_MSEC:         return String(static_cast<int32_t>(WiFiEventData.lastConnectMoment.millisPassedSince() / 1000ll)) + F("000"); 
+    case LabelType::CONNECTED_MSEC:
+    {
+      String s(static_cast<int32_t>(WiFiEventData.lastConnectMoment.millisPassedSince() / 1000ll));
+      return (s[0]=='0') ? s : (s + F("000"));
+    }
     case LabelType::LAST_DISCONNECT_REASON: return String(WiFiEventData.lastDisconnectReason);
     case LabelType::LAST_DISC_REASON_STR:   return getLastDisconnectReason();
     case LabelType::NUMBER_RECONNECTS:      return String(WiFiEventData.wifi_reconnects);
