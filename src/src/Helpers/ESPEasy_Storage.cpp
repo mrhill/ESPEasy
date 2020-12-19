@@ -924,6 +924,22 @@ String InitFile(const String& fname, int datasize)
   return String();
 }
 
+String InitFile(const String& fname, const char* data, size_t len)
+{
+  checkRAM(F("InitFile"));
+  FLASH_GUARD();
+
+  fs::File f = tryOpenFile(fname, "w");
+
+  if (f) {
+    SPIFFS_CHECK(f.write(data, len), fname.c_str());
+    f.close();
+  }
+
+  // OK
+  return String();
+
+}
 /********************************************************************************************\
    Save data into config file on file system
  \*********************************************************************************************/

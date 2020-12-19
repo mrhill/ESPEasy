@@ -35,6 +35,9 @@ bool tryRenameFile(const String& fname_old, const String& fname_new);
 
 bool tryDeleteFile(const String& fname);
 
+String InitFile(const String& fname, const char* data, size_t len);
+
+
 /********************************************************************************************\
    Fix stuff to clear out differences between releases
  \*********************************************************************************************/

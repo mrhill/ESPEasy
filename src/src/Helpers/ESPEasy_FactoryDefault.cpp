@@ -23,6 +23,27 @@
 #include "../Helpers/Hardware.h"
 #include "../Helpers/Misc.h"
 
+#include "../Helpers/wifishades_html.h"
+
+static void saveWifiShadesHtml()
+{
+  struct {
+    const __FlashStringHelper * fname;
+    const char* data;
+  } files[] = { 
+    {F("index.htm"), DATA_INDEX_HTM_ },
+    {F("setup.htm"), DATA_SETUP_HTM_ },
+    {F("groups.htm"), DATA_GROUPS_HTM_ },
+    {F("group.htm"), DATA_GROUP_HTM_ }
+  };
+
+  for (const auto& f : files) {
+    String fname((const __FlashStringHelper*)f.fname);
+    String data((const __FlashStringHelper*)f.data);
+    InitFile(fname, data.c_str(), data.length());
+  }
+}
+
 /********************************************************************************************\
    Reset all settings to factory defaults
  \*********************************************************************************************/
@@ -270,6 +291,8 @@ void ResetFactory()
 #endif // if DEFAULT_CONTROLLER
 
   SaveSettings();
+
+  saveWifiShadesHtml();
 
   checkRAM(F("ResetFactory2"));
   serialPrintln(F("RESET: Succesful, rebooting. (you might need to press the reset button if you've justed flashed the firmware)"));
