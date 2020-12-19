@@ -313,13 +313,6 @@ void setup()
 
   addLog(LOG_LEVEL_INFO, log);
 
-  if (RepeatResetDetect::testTrigger(RTC.repeatResetCount)) {
-    log = F("Factory reset on repeat reset #");
-    log += RTC.repeatResetCount;
-    addLog(LOG_LEVEL_INFO, log);
-    ResetFactory();
-  }
-
   fileSystemCheck();
 //  progMemMD5check();
   LoadSettings();
