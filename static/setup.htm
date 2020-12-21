@@ -79,11 +79,16 @@ function load() {
 }
 function inv(cb) { fetch('/tools?cmd=TaskValueSet,6,'+cb.id.slice(-1)+','+(+cb.checked)); }
 function save() {
-	fetch('/tools?cmd=name,'+document.querySelector('input#name').value.trim());
-	fetch('/tools?cmd=unit,'+document.querySelector('input#unit').value.trim());
-	inv(document.querySelector('input#inv1'));
-	inv(document.querySelector('input#inv2'));
-	fetch('/tools?cmd=save');
+	let u = document.querySelector('input#unit').value;
+	if (u<1||u>254) {
+		alert("Unit Number must be between 1 and 254");
+	} else {
+		fetch('/tools?cmd=unit,'+u);
+		fetch('/tools?cmd=name,'+document.querySelector('input#name').value.trim());
+		inv(document.querySelector('input#inv1'));
+		inv(document.querySelector('input#inv2'));
+		fetch('/tools?cmd=save');
+	}
 }
 document.addEventListener("DOMContentLoaded", load);
 </script>
@@ -96,7 +101,7 @@ document.addEventListener("DOMContentLoaded", load);
 	<table>
 		<tr><td>IP:</td><td><input readonly type="text" id="ip"></td></tr>
 		<tr><td>Unit Name:</td><td><input type="text" id="name" maxlength="25"></td></tr>
-		<tr><td>Unit Number:</td><td><input type="number" id="unit" min="0" max="126" value="8"></td></tr>
+		<tr><td>Unit Number:</td><td><input type="number" id="unit" min="1" max="254" value="0"></td></tr>
 
 		<tr><td><br></td></tr>
 
