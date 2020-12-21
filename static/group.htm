@@ -88,6 +88,7 @@ function load() {
 			let u = document.getElementById('u'+node['nr']);
 			u.value = node['name'];
 		});
+		document.getElementById('u'+dev['System']['Unit Number']).style.fontStyle = 'italic';
 
 		let g = dev['groups'][group];
 		if (g) {

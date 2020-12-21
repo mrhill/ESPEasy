@@ -113,9 +113,14 @@ function load() {
 	});
 }
 function ctrl(ev, group) {
-	groups[group]['members'].forEach(m=>{
-		fetch('http://'+units[m&255]+'/tools?cmd=event,'+ev+(m>>8));
-	})
+	if (!groups[group]['members'].length) {
+		fetch('/tools?cmd=event,'+ev+'0');
+		fetch('/tools?cmd=event,'+ev+'1');
+	} else {
+		groups[group]['members'].forEach(m=>{
+			fetch('http://'+units[m&255]+'/tools?cmd=event,'+ev+(m>>8));
+		});
+	}
 }
 document.addEventListener("DOMContentLoaded", load);
 </script>
