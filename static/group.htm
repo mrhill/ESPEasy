@@ -10,6 +10,7 @@ body {
 
 h1 {
 	font-size: 8vw;
+	margin: 2vw;
 }
 
 table {
@@ -50,26 +51,25 @@ button:hover {
 	color: #fff;
 }
 
-#err,#err2 {
+
+#pop {
 	display: none;
-	border-radius: 9px;
-	padding: 1em;
-	background: pink;
-	color: red;
-	width: 90%;
-}
-#saved {
-	display: none;
-	border-radius: 9px;
-	padding: 1em;
-	background: #CFC;
-	color: #000;
-	width: 90%;
+	position: absolute;
+	width: 100%;
+	padding: 1vw;
+	opacity: .9;
 }
 </style>
 
 <script>
 var group = 0;
+function popup(txt,inf) {
+	let e = document.getElementById('pop');
+	e.firstChild.innerText = txt;
+	e.style.color = inf&&'#040'||'red';
+	e.style.background = inf&&'#CFC'||'pink';
+	e.style.display = 'block';
+}
 function hideload() {document.getElementById('loading').style.display = 'none';}
 function load() {
 	fetch("json").then(r=>r.json()).then(dev=>{
@@ -105,7 +105,7 @@ function load() {
 		});
 	}).catch(()=>{
 		hideload();
-		document.getElementById('err').style.display = 'block';
+		popup("Error loading from device");
 	});
 }
 function save() {
@@ -116,22 +116,19 @@ function save() {
 			if (m) { urls.push(`/tools?cmd=GroupSet,${group},${row.firstChild.textContent},${m}`); }
 		});
 		Promise.all(urls.map(url => fetch(url).then(resp => resp.text()))).then(texts => {
-			document.getElementById('err2').style.display = 'none';
-			document.getElementById('saved').style.display = 'block';
 			fetch('/tools?cmd=save');
+			popup("Data saved",1);
 		});
 	}).catch(()=>{
 		hideload();
-		document.getElementById('err2').style.display = 'block';
+		popup("Error saving data");
 	});
 }
 document.addEventListener("DOMContentLoaded", load);
 </script>
 
 <body>
-	<div id="err">Error loading from device <button onclick="location.reload()">Retry</button></div>
-	<div id="err2">Error saving data</div>
-	<div id="saved">Data saved</div>
+	<div id="pop"><span></span><button onclick="document.getElementById('pop').style.display='none'">&#x274E;</button></div>
 
 	<h1 id="g">Edit Group </h1>
 	<p>Group Name: <input type="text" id="n" maxlength="31"></p>

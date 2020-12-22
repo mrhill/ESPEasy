@@ -7,6 +7,11 @@ body {
 	font-size: 6vw;
 }
 
+h1 {
+	font-size: 8vw;
+	margin: 2vw;
+}
+
 table {
 	font-size: 5vw;
 	margin-left: auto;
@@ -37,16 +42,23 @@ button:hover {
 input {font-size: 5vw;}
 input[type=text] { width: 70vw; }
 
-#err {
+#pop {
 	display: none;
-	padding: 1vw;
-	background: pink;
-	color: red;
+	position: absolute;
 	width: 100%;
+	padding: 1vw;
+	opacity: .9;
 }
 </style>
 
 <script>
+function popup(txt,inf) {
+	let e = document.getElementById('pop');
+	e.firstChild.innerText = txt;
+	e.style.color = inf&&'#040'||'red';
+	e.style.background = inf&&'#CFC'||'pink';
+	e.style.display = 'block';
+}
 function hideload() {document.getElementById('loading').style.display = 'none';}
 function load() {
 	fetch("json").then(r=>r.json()).then(dev=>{
@@ -57,23 +69,16 @@ function load() {
 		}
 	}).catch(()=>{
 		hideload();
-		document.getElementById('err').style.display = 'block';
+		popup("Error loading from device");
 	});
-}
-function save() {
-	fetch('/tools?cmd=name,'+document.querySelector('input#name').value.trim());
-	fetch('/tools?cmd=unit,'+document.querySelector('input#unit').value.trim());
-	inv(document.querySelector('input#inv1'));
-	inv(document.querySelector('input#inv2'));
-	fetch('/tools?cmd=save');
 }
 document.addEventListener("DOMContentLoaded", load);
 </script>
 
 <body>
-	<div id="err">Error loading from device <button onclick="location.reload()">Retry</button></div>
+	<div id="pop"><span></span><button onclick="document.getElementById('pop').style.display='none'">&#x274E;</button></div>
 
-	<h2>Shade Groups</h2>
+	<h1>Shade Groups</h1>
 	<table id="tbl">
 		<tr><th>No</th><th>Name</th></tr>
 	</table>

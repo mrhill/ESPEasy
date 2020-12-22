@@ -17,6 +17,8 @@ table {
 	margin-left:auto;
 	margin-right:auto;
 }
+th { padding-top: 2vw; }
+p { margin: 2vw 0; }
 
 button {
 	display: inline-block;
@@ -56,16 +58,23 @@ input[type=checkbox] {
 	margin: 2vw 2vw;
 }
 
-#err {
+#pop {
 	display: none;
-	padding: 1vw;
-	background: pink;
-	color: red;
+	position: absolute;
 	width: 100%;
+	padding: 1vw;
+	opacity: .9;
 }
 </style>
 
 <script>
+function popup(txt,inf) {
+	let e = document.getElementById('pop');
+	e.firstChild.innerText = txt;
+	e.style.color = inf&&'#040'||'red';
+	e.style.background = inf&&'#CFC'||'pink';
+	e.style.display = 'block';
+}
 function load() {
 	fetch("/json").then(r=>r.json()).then(dev=>{
 		document.querySelector('input#name').value = dev['System']['Unit Name'];
@@ -74,27 +83,40 @@ function load() {
 		document.querySelector('input#inv2').checked = dev['Sensors'][5]['TaskValues'][1]['Value'];
 		document.querySelector('input#ip').value = dev['WiFi']['IP Address'];
 	}).catch(()=>{
-		document.getElementById('err').style.display = 'block';
+		popup("Error loading from device");
 	});
 }
-function inv(cb) { fetch('/tools?cmd=TaskValueSet,6,'+cb.id.slice(-1)+','+(+cb.checked)); }
+function getinv(n) {
+	let cb = document.querySelector('input#inv'+n)
+	return '/tools?cmd=TaskValueSet,6,'+cb.id.slice(-1)+','+(+cb.checked);
+}
 function save() {
 	let u = document.querySelector('input#unit').value;
 	if (u<1||u>254) {
-		alert("Unit Number must be between 1 and 254");
+		popup("Set Unit Number between 1 and 254");
 	} else {
-		fetch('/tools?cmd=unit,'+u);
-		fetch('/tools?cmd=name,'+document.querySelector('input#name').value.trim());
-		inv(document.querySelector('input#inv1'));
-		inv(document.querySelector('input#inv2'));
-		fetch('/tools?cmd=save');
+		var urls = [
+			'/tools?cmd=unit,'+u,
+			'/tools?cmd=name,'+document.querySelector('input#name').value.trim(),
+			getinv(1),
+			getinv(2)
+		];
+		Promise.all(urls.map(url => fetch(url).then(resp =>{
+				if (!resp.ok) { throw 404; }
+				return resp.text();
+			}))).then(texts => {
+				fetch('/tools?cmd=save');
+				popup("Saved to Device",1);
+		}).catch(()=>{
+			popup("Error saving to device");
+		});
 	}
 }
 document.addEventListener("DOMContentLoaded", load);
 </script>
 
 <body>
-	<div id="err">Error loading from device <button onclick="location.reload()">Retry</button></div>
+	<div id="pop"><span></span><button onclick="document.getElementById('pop').style.display='none'">&#x274E;</button></div>
 
 	<h1>Shade Setup</h1>
 
@@ -102,8 +124,6 @@ document.addEventListener("DOMContentLoaded", load);
 		<tr><td>IP:</td><td><input readonly type="text" id="ip"></td></tr>
 		<tr><td>Unit Name:</td><td><input type="text" id="name" maxlength="25"></td></tr>
 		<tr><td>Unit Number:</td><td><input type="number" id="unit" min="1" max="254" value="0"></td></tr>
-
-		<tr><td><br></td></tr>
 
 		<tr><th>Motor 1</th><th>Motor 2</th></tr>
 		<tr><td><button onclick="fetch('/tools?cmd=event+up0')" class="med">&#9650; Up</button></td>
