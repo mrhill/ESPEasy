@@ -6,6 +6,10 @@ import shutil
 from datetime import date
 import json
 
+try:
+    from pygit2 import Repository
+except ImportError:
+    env.Execute("$PYTHONEXE -m pip install pygit2")
 
 def create_binary_filename():
     today = date.today()
@@ -18,7 +22,14 @@ def get_git_description():
         from pygit2 import Repository
         try:
             repo = Repository('.')
-            return "'{0}_{1}'".format(repo.head.shorthand, repo.revparse_single('HEAD').short_id)
+            head = repo.revparse_single('HEAD').id
+            for tag in list(repo.references):
+                if tag.startswith('refs/tags/rel-'):
+                    tag = tag[10:]
+                    if repo.revparse_single(tag).id == head:
+                        head = tag
+                        break
+            return "'{0}_{1}'".format(repo.head.shorthand, head)
         except:
             return 'No_.git_dir'
     except ImportError:
