@@ -101,7 +101,7 @@ var groups = [];
 function sel() { return document.querySelectorAll('input[type="radio"]:checked')[0].id; }
 function load() {
 	var ul = document.getElementsByTagName('ul')[0];
-	fetch("json").then(r=>r.json()).then(dev=>{
+	fetch("json?view=groups").then(r=>r.json()).then(dev=>{
 		dev['nodes'].forEach(u=>{ units[u['nr']]=u['ip']; });
 		groups = dev['groups'];
 		for(i=0; i<8; i++) {

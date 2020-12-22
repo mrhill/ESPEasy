@@ -213,7 +213,7 @@ void handle_setup_finish() {
     String host = formatIP(NetworkLocalIP());
     String url  = F("http://");
     url += host;
-    url += F("/config");
+    url += F("/setup.htm");
     addButton(url, host);
   }
   html_end_table();

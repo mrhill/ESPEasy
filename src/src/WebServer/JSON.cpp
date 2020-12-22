@@ -127,6 +127,14 @@ void handle_json()
         showTaskDetails     = false;
         showNodes           = false;
         showGroups          = false;
+      } else if (view == F("groups")) {
+        showSystem          = false;
+        showWifi            = false;
+        #ifdef HAS_ETHERNET
+        showEthernet        = false;
+        #endif
+        showDataAcquisition = false;
+        showTaskDetails     = false;
       }
     }
   }
