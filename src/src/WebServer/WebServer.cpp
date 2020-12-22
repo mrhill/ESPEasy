@@ -381,7 +381,7 @@ void getWebPageTemplateDefault(const String& tmplName, String& tmpl)
     getWebPageTemplateDefaultHead(tmpl, !addMeta, !addJS);
     tmpl += F("<body>"
               "<header class='apheader'>"
-              "<h1>Welcome to ESP Easy Mega AP</h1>"
+              "<h1>Welcome to WifiShades Setup</h1>"
               "</header>");
     getWebPageTemplateDefaultContentSection(tmpl);
     getWebPageTemplateDefaultFooter(tmpl);

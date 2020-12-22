@@ -33,6 +33,21 @@
 void handle_setup() {
   checkRAM(F("handle_setup"));
 
+  // WifiShades intercept
+  if (NetworkConnected()) {
+    if (fs::File dataFile = tryOpenFile(String(F("setup.htm")).c_str(), "r")) {
+      navMenuIndex = MENU_INDEX_TOOLS;
+      SaveSettings();
+      WiFiEventData.wifiSetup = false;
+
+      web_server.streamFile(dataFile, F("text/html"));
+      dataFile.close();
+      return;
+    }
+
+    WiFiEventData.wifiSetup = true;
+  }
+
   // Do not check client IP range allowed.
   TXBuffer.startStream();
 
@@ -213,7 +228,7 @@ void handle_setup_finish() {
     String host = formatIP(NetworkLocalIP());
     String url  = F("http://");
     url += host;
-    url += F("/setup.htm");
+    url += F("/");
     addButton(url, host);
   }
   html_end_table();
