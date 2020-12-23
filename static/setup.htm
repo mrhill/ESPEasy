@@ -86,7 +86,7 @@ function load() {
 		popup("Error loading from device");
 	});
 }
-function getinv(n) {
+function inv(n) {
 	let cb = document.querySelector('input#inv'+n)
 	return '/tools?cmd=TaskValueSet,6,'+cb.id.slice(-1)+','+(+cb.checked);
 }
@@ -98,8 +98,8 @@ function save() {
 		var urls = [
 			'/tools?cmd=unit,'+u,
 			'/tools?cmd=name,'+document.querySelector('input#name').value.trim(),
-			getinv(1),
-			getinv(2)
+			inv(1),
+			inv(2)
 		];
 		Promise.all(urls.map(url => fetch(url).then(resp =>{
 				if (!resp.ok) { throw 404; }
@@ -132,8 +132,8 @@ document.addEventListener("DOMContentLoaded", load);
 			<td><button onclick="fetch('/tools?cmd=event+stop1')" class="med">&#9632; Stop</button></td></tr>
 		<tr><td><button onclick="fetch('/tools?cmd=event+down0')" class="med">&#9660; Down</button></td>
 			<td><button onclick="fetch('/tools?cmd=event+down1')" class="med">&#9660; Down</button></td></tr>
-		<tr><td><input id="inv1" type="checkbox" onclick="inv(this)"/><label for="inv1">Invert &#8645;</label></td>
-			<td><input id="inv2" type="checkbox" onclick="inv(this)"/><label for="inv2">Invert &#8645;</label></td></tr>
+		<tr><td><input id="inv1" type="checkbox" onclick="fetch(inv(1))"/><label for="inv1">Invert &#8645;</label></td>
+			<td><input id="inv2" type="checkbox" onclick="fetch(inv(2))"/><label for="inv2">Invert &#8645;</label></td></tr>
 	</table>
 
 	<p><button class="act" onclick="save()">Save Settings</button></p>
