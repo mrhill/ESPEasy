@@ -141,6 +141,7 @@
 #include "src/Globals/Services.h"
 #include "src/Globals/Settings.h"
 #include "src/Globals/Statistics.h"
+#include "src/Globals/Alexa.h"
 
 #include "src/Helpers/DeepSleep.h"
 #include "src/Helpers/ESPEasyRTC.h"
@@ -711,7 +712,8 @@ void backgroundtasks()
       }
     }
     if (webserverRunning) {
-      web_server.handleClient();
+      alexa.loop();
+      //web_server.handleClient(); // called in alexa.loop
     }
     if (WiFi.getMode() != WIFI_OFF
     // This makes UDP working for ETHERNET

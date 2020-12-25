@@ -53,6 +53,7 @@
 #include "../Globals/NetworkState.h"
 #include "../Globals/Protocol.h"
 #include "../Globals/SecuritySettings.h"
+#include "../Globals/Alexa.h"
 
 #include "../Helpers/ESPEasy_Storage.h"
 #include "../Helpers/Hardware.h"
@@ -360,7 +361,8 @@ void setWebserverRunning(bool state) {
 
   if (state) {
     WebServerInit();
-    web_server.begin(Settings.WebserverPort);
+    alexa.init(&web_server);
+    //web_server.begin(Settings.WebserverPort); // called in alexa.init
     addLog(LOG_LEVEL_INFO, F("Webserver: start"));
   } else {
     web_server.stop();

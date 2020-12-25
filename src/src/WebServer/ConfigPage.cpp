@@ -14,6 +14,7 @@
 #include "../Globals/MQTT.h"
 #include "../Globals/SecuritySettings.h"
 #include "../Globals/Settings.h"
+#include "../Globals/Alexa.h"
 
 #include "../Helpers/DeepSleep.h"
 #include "../Helpers/ESPEasy_Storage.h"
@@ -76,6 +77,7 @@ void handle_config() {
     // Unit name
     safe_strncpy(Settings.Name, name.c_str(), sizeof(Settings.Name));
     Settings.appendUnitToHostname(isFormItemChecked(F("appendunittohostname")));
+    alexa.updateDeviceNames();
 
     // Password
     copyFormPassword(F("password"), SecuritySettings.Password, sizeof(SecuritySettings.Password));
