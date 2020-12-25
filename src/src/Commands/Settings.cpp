@@ -10,6 +10,7 @@
 #include "../Globals/SecuritySettings.h"
 #include "../Globals/Settings.h"
 #include "../Globals/Groups.h"
+#include "../Globals/Alexa.h"
 
 #include "../Helpers/ESPEasy_FactoryDefault.h"
 #include "../Helpers/ESPEasy_Storage.h"
@@ -36,6 +37,7 @@ String Command_Settings_Unit(struct EventStruct *event, const char* Line)
 {
 	if (HasArgv(Line, 2)) {
 		Settings.Unit = event->Par1;
+		alexa.updateDeviceNames();
 	}else  {
 		serialPrintln();
 		String result = F("Unit:");
@@ -47,11 +49,16 @@ String Command_Settings_Unit(struct EventStruct *event, const char* Line)
 
 String Command_Settings_Name(struct EventStruct *event, const char* Line)
 {
-	return Command_GetORSetString(event, F("Name:"),
+	String result = Command_GetORSetString(event, F("Name:"),
 				      Line,
 				      Settings.Name,
 				      sizeof(Settings.Name),
 				      1);
+
+	if (result == F("\nOk"))
+		alexa.updateDeviceNames();
+
+	return result;
 }
 
 String Command_GroupName(struct EventStruct *event, const char* Line)

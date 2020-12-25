@@ -7,6 +7,7 @@
 #include "../Globals/Services.h"
 
 #include "../Globals/ESPEasyWiFiEvent.h"
+#include "../Globals/Alexa.h"
 
 // ********************************************************************************
 // Web Interface handle other requests
@@ -29,6 +30,9 @@ void handleNotFound() {
   if (loadFromFS(true, web_server.uri())) { return; }
 
   if (loadFromFS(false, web_server.uri())) { return; }
+
+  if (alexa.handleAlexaApiCall(web_server.uri(), web_server.arg(0))) { return; }
+
   String message = F("URI: ");
   message += web_server.uri();
   message += F("\nMethod: ");
