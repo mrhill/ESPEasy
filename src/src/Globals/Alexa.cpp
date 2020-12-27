@@ -1,7 +1,7 @@
 #include "Alexa.h"
 #include "../ESPEasyCore/ESPEasy_Log.h"
-#include "../ESPEasyCore/ESPEasyRules.h"
 #include "../Globals/Settings.h"
+#include "../Globals/EventQueue.h"
 
 ShadesAlexa alexa;
 
@@ -10,8 +10,10 @@ static void deviceCallback(EspalexaDevice* d)
     String log = "Alexa: " + d->getName() + ' ' + d->getId() + ' ' + d->getValue();
     addLog(LOG_LEVEL_INFO, log);
 
-    String event = String(d->getValue() ? F("up") : F("down")) + d->getId();
-    rulesProcessing(event);
+    String event = String(d->getValue() ? 
+        ((((unsigned)d->getValue()-126U)<4U) ? F("stop") : F("up")) :
+        F("down")) + d->getId();
+    eventQueue.add(event);
 }
 
 static String getAlexaDeviceName(int devIdx) {
