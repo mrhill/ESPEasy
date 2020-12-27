@@ -14,17 +14,24 @@ static void deviceCallback(EspalexaDevice* d)
     rulesProcessing(event);
 }
 
+static String getAlexaDeviceName(int devIdx) {
+    String name = Settings.getHostname(false);
+    if (name.length() && !isdigit(name[name.length()-1]))
+        name += Settings.Unit;
+    name += F(" Motor ");
+    name += devIdx;
+    return name;
+}
+
 void ShadesAlexa::init(ESP8266WebServer* server)
 {
-    String hostName = Settings.getHostname(true);
-    this->addDevice(hostName + F(" Motor 1"), deviceCallback);
-    this->addDevice(hostName + F(" Motor 2"), deviceCallback);
+    this->addDevice(getAlexaDeviceName(1), deviceCallback);
+    this->addDevice(getAlexaDeviceName(2), deviceCallback);
     this->begin(server);
 }
 
 void ShadesAlexa::updateDeviceNames()
 {
-    String hostName = Settings.getHostname(true);
-    this->renameDevice(1, hostName + F(" Motor 1"));
-    this->renameDevice(2, hostName + F(" Motor 2"));
+    this->renameDevice(1, getAlexaDeviceName(1));
+    this->renameDevice(2, getAlexaDeviceName(2));
 }
