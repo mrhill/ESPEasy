@@ -10,9 +10,13 @@ static void deviceCallback(EspalexaDevice* d)
     String log = "Alexa: " + d->getName() + ' ' + d->getId() + ' ' + d->getValue();
     addLog(LOG_LEVEL_INFO, log);
 
-    String event = String(d->getValue() ? 
-        ((((unsigned)d->getValue()-126U)<4U) ? F("stop") : F("up")) :
-        F("down")) + d->getId();
+    unsigned value = d->getValue();
+    bool is50pct = (value - 126U) <= 4U;
+    String event = String(value ? (is50pct ? F("stop") : F("up")) : F("down")) + d->getId();
+
+    if (is50pct)
+        d->setValue(255); // snap back to prevent shades stuck
+
     eventQueue.add(event);
 }
 
